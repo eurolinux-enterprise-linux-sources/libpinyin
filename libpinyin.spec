@@ -2,7 +2,7 @@
 
 Name:           libpinyin
 Version:        0.9.93
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        Library to deal with pinyin
 
 License:        GPLv2+
@@ -92,6 +92,12 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_mandir}/man1/*.1.*
 
 %changelog
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 0.9.93-4
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.9.93-3
+- Mass rebuild 2013-12-27
+
 * Tue Jul 30 2013 Peng Wu <pwu@redhat.com> - 0.9.93-2
 - Fixes load table.conf in German locale
 
