@@ -1,0 +1,95 @@
+From 8abc8cfd97cfe63c8e26e0838d4c825283b30630 Mon Sep 17 00:00:00 2001
+From: Peng Wu <alexepico@gmail.com>
+Date: Fri, 26 Jul 2013 12:35:46 +0800
+Subject: [PATCH] Force to use C locale to load table.conf
+
+---
+ src/storage/table_info.cpp        | 14 ++++++++++++++
+ tests/storage/test_table_info.cpp |  3 +++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/src/storage/table_info.cpp b/src/storage/table_info.cpp
+index 795d93d..63af8e0 100644
+--- a/src/storage/table_info.cpp
++++ b/src/storage/table_info.cpp
+@@ -23,6 +23,7 @@
+ #include <stdio.h>
+ #include <assert.h>
+ #include <string.h>
++#include <locale.h>
+ 
+ using namespace pinyin;
+ 
+@@ -121,6 +122,8 @@ static PHRASE_FILE_TYPE to_file_type(const char * str) {
+ bool SystemTableInfo::load(const char * filename) {
+     reset();
+ 
++    char * locale = setlocale(LC_NUMERIC, "C");
++
+     FILE * input = fopen(filename, "r");
+     if (NULL == input) {
+         fprintf(stderr, "open %s failed.\n", filename);
+@@ -183,6 +186,9 @@ bool SystemTableInfo::load(const char * filename) {
+ 
+     /* postfix reserved tables. */
+     postfix_tables();
++
++    setlocale(LC_NUMERIC, locale);
++
+     return true;
+ }
+ 
+@@ -208,6 +214,8 @@ void UserTableInfo::reset() {
+ bool UserTableInfo::load(const char * filename) {
+     reset();
+ 
++    char * locale = setlocale(LC_NUMERIC, "C");
++
+     FILE * input = fopen(filename, "r");
+     if (NULL == input) {
+         fprintf(stderr, "open %s failed.", filename);
+@@ -237,10 +245,14 @@ bool UserTableInfo::load(const char * filename) {
+ 
+     fclose(input);
+ 
++    setlocale(LC_NUMERIC, locale);
++
+     return true;
+ }
+ 
+ bool UserTableInfo::save(const char * filename) {
++    char * locale = setlocale(LC_NUMERIC, "C");
++
+     FILE * output = fopen(filename, "w");
+     if (NULL == output) {
+         fprintf(stderr, "write %s failed.\n", filename);
+@@ -252,6 +264,8 @@ bool UserTableInfo::save(const char * filename) {
+ 
+     fclose(output);
+ 
++    setlocale(LC_NUMERIC, locale);
++
+     return true;
+ }
+ 
+diff --git a/tests/storage/test_table_info.cpp b/tests/storage/test_table_info.cpp
+index 68b4735..5781c97 100644
+--- a/tests/storage/test_table_info.cpp
++++ b/tests/storage/test_table_info.cpp
+@@ -20,10 +20,13 @@
+  */
+ 
+ #include <stdio.h>
++#include <locale.h>
+ #include "pinyin_internal.h"
+ 
+ 
+ int main(int argc, char * argv[]) {
++    setlocale(LC_ALL, "");
++
+     SystemTableInfo system_table_info;
+ 
+     bool retval = system_table_info.load("../../data/table.conf");
+-- 
+1.8.3.1
+
